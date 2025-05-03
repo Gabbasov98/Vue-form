@@ -15,7 +15,7 @@
             <div class="footer-subscribe__title">
               Subscribe to receive free Webflow cloneables every month.
             </div>
-            <SubscribeForm/>
+<!--            <SubscribeForm/>-->
           </div>
         </div>
       </div>

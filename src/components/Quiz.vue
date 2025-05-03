@@ -27,134 +27,34 @@
                   </template>
               </div>
 
-              <div
-                      class="quiz-step"
+              <QuizStep1
+                      ref="QuizStep1Ref"
+                      :errorMessage="errorMessage"
                       v-if="currentStep === 1"
-              >
-                  <div class="quiz-step__text">
-                      <div class="quiz-step__title h3">
-                          Contact details
-                      </div>
-                      <div class="quiz-step__desc text18 text14-tablet">
-                          Lorem ipsum dolor sit amet consectetur adipisc.
-                      </div>
-                  </div>
+                      :form="form"
+                      @fieldsChange="(data) => stepDataSync(data)"
+                      @isSuccess="(value) => setStep1Status(value)"
+              />
 
-                  <div class="quiz-step__fields">
-                      <BaseInput
-                              v-model="form.name"
-                              label="Name"
-                              placeholder="John Carter"
-                              required
-                      >
-                          <img src="../assets/img/user.svg" alt="">
-                      </BaseInput>
-                      <BaseInput
-                              v-model="form.email"
-                              label="Email "
-                              placeholder="Email address"
-                              validation-type="email"
-                              required
-                      >
-                          <img src="../assets/img/email.svg" alt="">
-                      </BaseInput>
-                      <BaseInput
-                              v-model="form.phone"
-                              label="Phone Number"
-                              placeholder="(123) 456 - 7890"
-                              :mask="'(000) 000-0000'"
-                              validation-type="phone"
-                              required
-                      >
-                          <img src="../assets/img/phone.svg" alt="">
-                      </BaseInput>
-
-                      <BaseInput
-                              v-model="form.company"
-                              label="Company"
-                              placeholder="Company name"
-                              required
-                      >
-                          <img src="../assets/img/company.svg" alt="">
-                      </BaseInput>
-                  </div>
-
-                  <div v-if="errorMessage" class="quiz-step__message">
-                      {{errorMessage}}
-                  </div>
-              </div>
-
-              <div
-                      class="quiz-step"
+              <QuizStep2
                       v-if="currentStep === 2"
-              >
-                  <div class="quiz-step__text">
-                      <div class="quiz-step__title h3">
-                          Our services
-                      </div>
-                      <div class="quiz-step__desc text18 text14-tablet">
-                          Please select which service you are interested in.
-                      </div>
-                  </div>
-                  <div class="quiz-step__checks">
-                      <BaseCheckbox
-                              v-for="option in servicesOptions" :key="option.value"
-                              v-model="form.services"
-                              :value="option.value"
-                              :label="option.label"
-                              :icon="option.icon"
-                      />
-                  </div>
-              </div>
+                      :form="form"
+                      @fieldsChange="(data) => stepDataSync(data)"
+              />
 
-              <div
-                      class="quiz-step"
+              <QuizStep3
                       v-if="currentStep === 3"
-              >
-                  <div class="quiz-step__text">
-                      <div class="quiz-step__title h3">
-                          What’s your project budget?
-                      </div>
-                      <div class="quiz-step__desc text18 text14-tablet">
-                          Please select the project budget range you have in mind.
-                      </div>
-                  </div>
-                  <div class="quiz-step__checks">
-                      <BaseRadio
-                              v-for="option in budgetOptions" :key="option.value"
-                              v-model="form.budget"
-                              :value="option.value"
-                              :label="option.label"
-                              name="Budget"
-                      />
-                  </div>
-              </div>
+                      :form="form"
+                      @fieldsChange="(data) => stepDataSync(data)"
+              />
 
-              <div
-                      class="quiz-step"
+              <QuizStep4
                       v-if="currentStep === 4"
-              >
-                  <div class="quiz-finish">
-                      <img src="../assets/img/quiz-finish.svg" alt="" class="quiz-finish__icon">
-                      <div class="quiz-step__text">
-                          <div class="quiz-step__title h3">
-                              Submit your quote request
-                          </div>
-                          <div class="quiz-step__desc text18 text14-tablet">
-                              Please review all the information you previously typed in the past steps, and if all is okay, submit your message to receive a project quote in 24 - 48 hours.
-                          </div>
-                      </div>
+                      @sendData="sendData"
+              />
 
-                      <div class="quiz-finish__nav">
-                          <BaseButton
-                                  variant="primary"
-                                  @click="sendData"
-                          >
-                              <span>Submit</span>
-                          </BaseButton>
-                      </div>
-                  </div>
-
+              <div v-if="errorMessage" class="quiz-step__message">
+                  {{errorMessage}}
               </div>
           </div>
 
@@ -190,34 +90,32 @@
 import { ref, reactive  } from 'vue';
 
 import BaseButton from '#/components/ui/BaseButton.vue'
-import BaseInput from '#/components/ui/BaseInput.vue'
-import BaseCheckbox from '#/components/ui/BaseCheckbox.vue'
-import BaseRadio from '#/components/ui/BaseRadio.vue'
+import QuizStep1 from '#/components/QuizStep1.vue'
+import QuizStep2 from '#/components/QuizStep2.vue'
+import QuizStep3 from '#/components/QuizStep3.vue'
+import QuizStep4 from '#/components/QuizStep4.vue'
+
+const QuizStep1Ref = ref(null)
+const currentStep = ref(1);
+const isStep1Success = ref(false);
+const errorMessage = ref('');
 
 const form = reactive({
     name: '',
     email: '',
     phone: '',
     company: '',
-    services: ['Development'],
-    budget: '$5.000 - $10.000',
+    services: [],
+    budget: '',
 })
-const currentStep = ref(1);
-const errorMessage = ref('');
 
-const servicesOptions = [
-    { label: 'Development', value: 'Development' , icon: 'Development.svg'},
-    { label: 'Web Design', value: 'Web Design' , icon: 'WebDesign.svg'},
-    { label: 'Marketing', value: 'Marketing' , icon: 'Marketing.svg'},
-    { label: 'Other', value: 'Other' , icon: 'Other.svg'},
-]
+function stepDataSync(data) {
+    Object.assign(form, data)
+}
 
-const budgetOptions = [
-    { label: '$5.000 - $10.000', value: '$5.000 - $10.000' },
-    { label: '$10.000 - $20.000', value: '$10.000 - $20.000' },
-    { label: '$20.000 - $50.000', value: '$20.000 - $50.000' },
-    { label: '$50.000 +', value: '$50.000 +' },
-]
+function setStep1Status(value) {
+    isStep1Success.value = value
+}
 
 function sendData() {
     localStorage.setItem('userForm', JSON.stringify(form))
@@ -234,28 +132,38 @@ function prevStep() {
 }
 
 function nextStep() {
-    console.log(form.name)
-    if(
-        currentStep === 1 &&
-        form.name === '' ||
-        form.email === '' ||
-        form.phone === '' ||
-        form.company === ''
-    )
-    {
-        errorMessage.value = 'All fields are required'
-        return
+    if(currentStep.value === 1) {
+        QuizStep1Ref.value.doValidation()
+
+        if(isStep1Success.value){
+            currentStep.value++
+        }
+        return;
     }
 
+    if(currentStep.value === 2) {
+        if(form.services.length === 0){
+            errorMessage.value = 'Select at least one option'
+        } else{
+            errorMessage.value = ''
+            currentStep.value++
+        }
+        return;
+    }
+
+    if(currentStep.value === 3) {
+        if(form.budget === ''){
+            errorMessage.value = 'Select option'
+        } else{
+            errorMessage.value = ''
+            currentStep.value++
+        }
+        return;
+    }
 
     errorMessage.value = ''
     currentStep.value++
 }
-
-
-
-
-
 
 </script>
 
@@ -358,39 +266,10 @@ function nextStep() {
     &__text{
         @include grid100gap(.5em);
     }
-    &__checks,
-    &__fields{
-        display: grid;
-        grid-template-columns: repeat(2,calc(50% - .875em));
-        margin-top: 2.45em;
-    }
-    &__fields{
-        gap: 2.75em 1.75em;
-    }
-    &__checks{
-        gap: 1.35em 1.75em;
-    }
     &__message{
         margin-top: 2em;
         line-height: 150%;
         color: red;
-    }
-}
-
-.quiz-finish{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    width: 31em;
-    max-width: 100%;
-    margin: 0 auto;
-    &__icon{
-        width: 9.875em;
-        margin-bottom: 1.15em;
-    }
-    &__nav{
-        margin-top: .75em;
     }
 }
 
@@ -420,21 +299,8 @@ function nextStep() {
     }
 
     .quiz-step{
-        &__checks,
-        &__fields{
-            grid-template-columns: 100%;
-            gap: 1.25em;
-            margin-top: 1.25em;
-        }
         &__message{
             margin-top: 1em;
-        }
-    }
-
-    .quiz-finish{
-        &__icon{
-            width: 5em;
-            margin-bottom: 1em;
         }
     }
 }

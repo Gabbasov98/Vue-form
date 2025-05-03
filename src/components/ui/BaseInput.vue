@@ -48,36 +48,13 @@
             type: String,
             default: '',
         },
-        disabled: {
-            type: Boolean,
-            default: false,
-        },
-        mask: {
-            type: [String, Object],
-            default: null,
-        },
-        clearable: {
-            type: Boolean,
-            default: true,
-        },
-        requiredDigits: {
-            type: Number,
-            default: 10,
-        },
-        validationType: {
+        errorMessage: {
             type: String,
-            default: '', // '', 'phone', 'email', etc.
+            default: '',
         },
-        required: {
-            type: Boolean,
-            default: false,
-        }
     })
 
     const emit = defineEmits(['update:modelValue'])
-
-    const inputRef = ref(null)
-    const touched = ref(false)
 
     let maskInstance = null
 
@@ -90,63 +67,12 @@
         modelValueComputed.value = event.target.value
     }
 
-    const digitsOnly = computed(() => modelValueComputed.value.replace(/\D/g, ''))
-
-    const isEmpty = computed(() => {
-        return modelValueComputed.value.toString().trim() === ''
-    })
-
-    const isInvalid = computed(() => {
-        if (!touched.value) return false
-
-        if (props.required && isEmpty.value) {
-            return true
-        }
-
-        if (!isEmpty.value) {
-            if (props.validationType === 'phone') {
-                return digitsOnly.value.length < props.requiredDigits
-            }
-            if (props.validationType === 'email') {
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-                return !emailRegex.test(modelValueComputed.value)
-            }
-        }
-
-        return false
-    })
-
-    const errorMessage = computed(() => {
-        if (!touched.value) return ''
-        if (!props.required) return ''
-
-        // if (isEmpty.value) {
-        //     return ''
-        // }
-
-        if (props.required && isEmpty.value) {
-            return 'Field is required'
-        }
-
-        if (props.validationType === 'phone' && digitsOnly.value.length < props.requiredDigits) {
-            return `Enter at least ${props.requiredDigits} digits`
-        }
-
-        if (props.validationType === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(modelValueComputed.value)) {
-            return 'Email is not correct'
-        }
-
-        return ''
-    })
-
-    function handleBlur() {
-        touched.value = true
-    }
+    const inputRef = ref(null)
 
     onMounted(() => {
-        if (props.mask && inputRef.value) {
+        if (props.type === 'tel' && inputRef.value) {
             maskInstance = IMask(inputRef.value, {
-                mask: props.mask
+                mask: '(000) 000-0000'
             })
             maskInstance.on('accept', () => {
                 emit('update:modelValue', maskInstance.value)
@@ -158,12 +84,6 @@
         if (maskInstance) {
             maskInstance.destroy()
             maskInstance = null
-        }
-    })
-
-    watch(() => props.modelValue, (newVal) => {
-        if (maskInstance && maskInstance.value !== newVal) {
-            maskInstance.value = newVal
         }
     })
 </script>

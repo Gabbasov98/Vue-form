@@ -8,7 +8,7 @@
         />
         <div class="custom-check__inner">
             <div class="custom-check__icon">
-                <img :src="$getImageUrl(icon)" alt="">
+                <img :src="getImageUrl(icon)" alt="">
             </div>
             <div class="custom-check__label">
                 {{label}}
@@ -18,7 +18,10 @@
 </template>
 
 <script setup>
-    import { defineProps, defineEmits, computed } from 'vue'
+    import {defineProps, defineEmits, computed} from 'vue'
+    import { useImageUrl } from '#/composables/useImageUrl'
+
+    const { getImageUrl } = useImageUrl()
 
     defineOptions({
         name: 'BaseCheckbox'
@@ -73,6 +76,7 @@
             emit('update:modelValue', event.target.checked)
         }
     }
+
 </script>
 
 <style scoped lang="scss">

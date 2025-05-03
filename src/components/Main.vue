@@ -15,7 +15,7 @@
 
       <div class="main-subscribe">
         <div class="main-subscribe__wrap">
-          <SubscribeForm/>
+<!--          <SubscribeForm/>-->
         </div>
 
         <div class="main-subscribe__hint">
